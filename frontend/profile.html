@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profile — StudySync</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #0f172a; color: #e2e8f0; min-height:100vh; }
+    .grad { background: linear-gradient(135deg, #6ee7b7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; }
+    .nav { background:#1e293b; border-bottom:1px solid #334155; padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; }
+    .nav-links a { color:#94a3b8; font-size:0.9rem; text-decoration:none; padding: 0.4rem 0.9rem; border-radius:0.5rem; transition:all 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color:#6ee7b7; background:#0f172a; }
+    .avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,#6ee7b7,#3b82f6); display:flex; align-items:center; justify-content:center; font-size:2rem; font-weight:800; color:#0f172a; font-family:'Syne',sans-serif; }
+    .stat-row { display:flex; align-items:center; justify-content:space-between; padding:0.75rem 0; border-bottom:1px solid #334155; }
+    .stat-row:last-child { border-bottom:none; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div style="font-family:'Syne',sans-serif;" class="font-black text-xl">Study<span class="grad">Sync</span></div>
+  <div class="nav-links flex gap-1">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="timer.html">Timer</a>
+    <a href="tasks.html">Tasks</a>
+    <a href="notes.html">Notes</a>
+    <a href="profile.html" class="active">Profile</a>
+  </div>
+  <button onclick="logout()" class="text-slate-500 hover:text-red-400 text-sm transition">Logout</button>
+</nav>
+
+<div class="max-w-2xl mx-auto px-6 py-10">
+  <h1 class="text-3xl font-black mb-8" style="font-family:'Syne',sans-serif;">My <span class="grad">Profile</span></h1>
+
+  <!-- User info card -->
+  <div class="card p-6 mb-6">
+    <div class="flex items-center gap-5 mb-6">
+      <div class="avatar" id="avatarLetter">?</div>
+      <div>
+        <div class="text-2xl font-bold" id="profileName">Loading...</div>
+        <div class="text-slate-400" id="profileEmail">—</div>
+        <div class="text-sm text-emerald-400 mt-1">🔥 <span id="profileStreak">0</span> day streak</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="card p-6 mb-6">
+    <h2 class="font-bold text-lg mb-4" style="font-family:'Syne',sans-serif;">Study Statistics</h2>
+    <div>
+      <div class="stat-row">
+        <span class="text-slate-400">Total Study Hours</span>
+        <span class="font-bold text-emerald-400" id="statHours">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="text-slate-400">Total Study Sessions</span>
+        <span class="font-bold" id="statSessions">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="text-slate-400">Tasks Completed</span>
+        <span class="font-bold text-blue-400" id="statCompleted">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="text-slate-400">Tasks Pending</span>
+        <span class="font-bold text-amber-400" id="statPending">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="text-slate-400">Notes Saved</span>
+        <span class="font-bold text-purple-400" id="statNotes">—</span>
+      </div>
+      <div class="stat-row">
+        <span class="text-slate-400">Current Streak</span>
+        <span class="font-bold text-orange-400">🔥 <span id="statStreak">0</span> days</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout -->
+  <button onclick="logout()" class="w-full py-3 rounded-xl bg-red-900 hover:bg-red-800 text-red-200 font-semibold transition border border-red-800">
+    🚪 Logout
+  </button>
+</div>
+
+<script>
+const userId = localStorage.getItem('userId');
+if (!userId) window.location.href = 'login.html';
+
+const name = localStorage.getItem('userName') || 'User';
+const email = localStorage.getItem('userEmail') || '—';
+const streak = localStorage.getItem('streakCount') || '0';
+
+document.getElementById('profileName').textContent = name;
+document.getElementById('profileEmail').textContent = email;
+document.getElementById('profileStreak').textContent = streak;
+document.getElementById('statStreak').textContent = streak;
+document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+
+async function loadStats() {
+  try {
+    const [sessionRes, taskRes, noteRes] = await Promise.all([
+      fetch(`http://localhost:8080/api/sessions/${userId}/total`),
+      fetch(`http://localhost:8080/api/tasks/${userId}`),
+      fetch(`http://localhost:8080/api/notes/${userId}`)
+    ]);
+    const sessionData = await sessionRes.json();
+    const tasks = await taskRes.json();
+    const notes = await noteRes.json();
+
+    document.getElementById('statHours').textContent = `${sessionData.totalHours || 0} hrs`;
+    const sessions = await fetch(`http://localhost:8080/api/sessions/${userId}`);
+    const sessionList = await sessions.json();
+    document.getElementById('statSessions').textContent = sessionList.length;
+    document.getElementById('statCompleted').textContent = tasks.filter(t => t.completed).length;
+    document.getElementById('statPending').textContent = tasks.filter(t => !t.completed).length;
+    document.getElementById('statNotes').textContent = notes.length;
+  } catch (e) { console.error('Failed to load stats', e); }
+}
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+loadStats();
+</script>
+</body>
+</html>

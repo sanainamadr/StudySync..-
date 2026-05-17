@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudySync — Smart Student Productivity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #6ee7b7;
+      --dark: #0f172a;
+      --card: #1e293b;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--dark); color: #e2e8f0; }
+    h1,h2,h3 { font-family: 'Syne', sans-serif; }
+    .grad { background: linear-gradient(135deg, #6ee7b7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background: var(--card); border: 1px solid #334155; border-radius: 1rem; }
+    .btn-primary { background: linear-gradient(135deg, #6ee7b7, #3b82f6); color: #0f172a; font-weight: 700; padding: 0.75rem 2rem; border-radius: 0.75rem; transition: opacity 0.2s; display:inline-block; }
+    .btn-primary:hover { opacity: 0.85; }
+    .feature-icon { width:48px; height:48px; border-radius:12px; background: linear-gradient(135deg,#6ee7b7,#3b82f6); display:flex; align-items:center; justify-content:center; font-size:1.5rem; margin-bottom:1rem; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+    .float { animation: float 3s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="flex items-center justify-between px-8 py-5 border-b border-slate-800">
+  <div class="text-2xl font-black" style="font-family:'Syne',sans-serif;">
+    Study<span class="grad">Sync</span>
+  </div>
+  <div class="flex gap-4">
+    <a href="login.html" class="px-5 py-2 rounded-lg border border-slate-600 hover:border-emerald-400 transition text-sm font-medium">Login</a>
+    <a href="signup.html" class="btn-primary text-sm py-2 px-5">Get Started</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="text-center py-24 px-6">
+  <div class="float text-6xl mb-6">📚</div>
+  <h1 class="text-5xl md:text-7xl font-black leading-tight mb-6">
+    Study Smarter.<br/><span class="grad">Not Harder.</span>
+  </h1>
+  <p class="text-slate-400 text-xl max-w-xl mx-auto mb-10">
+    Track your study sessions, manage tasks, build streaks, and stay on top of your goals — all in one place.
+  </p>
+  <a href="signup.html" class="btn-primary text-lg">Start for Free →</a>
+</section>
+
+<!-- FEATURES -->
+<section class="max-w-5xl mx-auto px-6 py-16">
+  <h2 class="text-3xl font-bold text-center mb-12">Everything you need to <span class="grad">stay focused</span></h2>
+  <div class="grid md:grid-cols-3 gap-6">
+
+    <div class="card p-6">
+      <div class="feature-icon">⏱️</div>
+      <h3 class="text-lg font-bold mb-2">Pomodoro Timer</h3>
+      <p class="text-slate-400 text-sm">Focus for 25 minutes, break for 5. Every completed session is auto-logged to your profile.</p>
+    </div>
+
+    <div class="card p-6">
+      <div class="feature-icon">✅</div>
+      <h3 class="text-lg font-bold mb-2">Task Manager</h3>
+      <p class="text-slate-400 text-sm">Add tasks, set priorities (High/Medium/Low), edit them, and check them off as you go.</p>
+    </div>
+
+    <div class="card p-6">
+      <div class="feature-icon">🔥</div>
+      <h3 class="text-lg font-bold mb-2">Study Streaks</h3>
+      <p class="text-slate-400 text-sm">Study every day to grow your streak. Miss a day and it resets — stay consistent!</p>
+    </div>
+
+    <div class="card p-6">
+      <div class="feature-icon">📝</div>
+      <h3 class="text-lg font-bold mb-2">Quick Notes</h3>
+      <p class="text-slate-400 text-sm">Jot down important points during study sessions. Find them anytime in your notes page.</p>
+    </div>
+
+    <div class="card p-6">
+      <div class="feature-icon">📊</div>
+      <h3 class="text-lg font-bold mb-2">Dashboard</h3>
+      <p class="text-slate-400 text-sm">See total hours studied, tasks completed, and weekly progress at a single glance.</p>
+    </div>
+
+    <div class="card p-6">
+      <div class="feature-icon">📱</div>
+      <h3 class="text-lg font-bold mb-2">Responsive UI</h3>
+      <p class="text-slate-400 text-sm">Works beautifully on mobile and desktop. Study on any device, anywhere.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="text-center py-20 px-6">
+  <h2 class="text-4xl font-black mb-4">Ready to build better <span class="grad">study habits?</span></h2>
+  <p class="text-slate-400 mb-8">Join StudySync and take control of your productivity today.</p>
+  <a href="signup.html" class="btn-primary text-lg">Create Free Account →</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="text-center text-slate-600 py-8 border-t border-slate-800 text-sm">
+  © 2024 StudySync. Built with ❤️ for students.
+</footer>
+
+</body>
+</html>

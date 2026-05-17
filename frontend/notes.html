@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Notes — StudySync</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #0f172a; color: #e2e8f0; min-height:100vh; }
+    .grad { background: linear-gradient(135deg, #6ee7b7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 1rem; }
+    .nav { background:#1e293b; border-bottom:1px solid #334155; padding:1rem 2rem; display:flex; align-items:center; justify-content:space-between; }
+    .nav-links a { color:#94a3b8; font-size:0.9rem; text-decoration:none; padding: 0.4rem 0.9rem; border-radius:0.5rem; transition:all 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color:#6ee7b7; background:#0f172a; }
+    input, textarea { background: #0f172a; border: 1px solid #334155; border-radius: 0.625rem; padding: 0.65rem 1rem; color:#e2e8f0; outline:none; width:100%; transition: border 0.2s; }
+    input:focus, textarea:focus { border-color: #6ee7b7; }
+    textarea { resize: vertical; min-height: 100px; font-family: inherit; }
+    .btn-add { background: linear-gradient(135deg, #6ee7b7, #3b82f6); color:#0f172a; font-weight:700; padding:0.65rem 1.25rem; border-radius:0.625rem; cursor:pointer; border:none; }
+    .note-card { background:#0f172a; border:1px solid #334155; border-radius:0.75rem; padding:1rem; position:relative; transition: border 0.2s; }
+    .note-card:hover { border-color: #475569; }
+    .icon-btn { background:none; border:none; cursor:pointer; padding:0.25rem 0.4rem; border-radius:0.375rem; transition:background 0.2s; font-size:0.9rem; }
+    .icon-btn:hover { background:#334155; }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div style="font-family:'Syne',sans-serif;" class="font-black text-xl">Study<span class="grad">Sync</span></div>
+  <div class="nav-links flex gap-1">
+    <a href="dashboard.html">Dashboard</a>
+    <a href="timer.html">Timer</a>
+    <a href="tasks.html">Tasks</a>
+    <a href="notes.html" class="active">Notes</a>
+    <a href="profile.html">Profile</a>
+  </div>
+  <button onclick="logout()" class="text-slate-500 hover:text-red-400 text-sm transition">Logout</button>
+</nav>
+
+<div class="max-w-4xl mx-auto px-6 py-10">
+  <h1 class="text-3xl font-black mb-2" style="font-family:'Syne',sans-serif;">Study <span class="grad">Notes</span></h1>
+  <p class="text-slate-400 mb-6">Save quick notes and key points from your study sessions.</p>
+
+  <!-- Add note -->
+  <div class="card p-5 mb-8">
+    <h2 class="font-bold mb-4">Add New Note</h2>
+    <div class="flex flex-col gap-3">
+      <input type="text" id="noteTitle" placeholder="Note title (e.g. Chapter 5 Key Points)" />
+      <textarea id="noteContent" placeholder="Write your note here..."></textarea>
+      <div class="flex justify-end">
+        <button class="btn-add" onclick="addNote()">💾 Save Note</button>
+      </div>
+    </div>
+    <p class="text-red-400 text-sm mt-2" id="noteError" style="display:none"></p>
+  </div>
+
+  <!-- Notes grid -->
+  <div id="notesGrid" class="grid md:grid-cols-2 gap-4">
+    <p class="text-slate-500 text-sm col-span-2 text-center py-8">Loading notes...</p>
+  </div>
+</div>
+
+<!-- Edit modal -->
+<div id="editModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:50; display:none; align-items:center; justify-content:center;">
+  <div class="card p-6 w-full max-w-md mx-4">
+    <h2 class="font-bold text-lg mb-4" style="font-family:'Syne',sans-serif;">Edit Note</h2>
+    <div class="flex flex-col gap-3">
+      <input type="text" id="editTitle" placeholder="Title" />
+      <textarea id="editContent" placeholder="Content"></textarea>
+      <div class="flex gap-3 justify-end">
+        <button onclick="closeEdit()" class="px-4 py-2 rounded-lg bg-slate-700 text-slate-300 text-sm cursor-pointer border-none">Cancel</button>
+        <button onclick="saveEdit()" class="btn-add text-sm">Save Changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const userId = localStorage.getItem('userId');
+if (!userId) window.location.href = 'login.html';
+
+let allNotes = [];
+let editingId = null;
+
+async function loadNotes() {
+  try {
+    const res = await fetch(`http://localhost:8080/api/notes/${userId}`);
+    allNotes = await res.json();
+    renderNotes();
+  } catch (e) {
+    document.getElementById('notesGrid').innerHTML = '<p class="text-red-400 text-sm col-span-2 text-center">Failed to load notes. Is backend running?</p>';
+  }
+}
+
+function renderNotes() {
+  const el = document.getElementById('notesGrid');
+  if (allNotes.length === 0) {
+    el.innerHTML = '<p class="text-slate-500 text-sm col-span-2 text-center py-8">No notes yet. Add your first note above!</p>';
+    return;
+  }
+  el.innerHTML = allNotes.slice().reverse().map(n => `
+    <div class="note-card">
+      <div class="flex items-start justify-between mb-2">
+        <div class="font-bold text-base pr-2">${n.title}</div>
+        <div class="flex gap-1 shrink-0">
+          <button class="icon-btn text-blue-400" onclick="openEdit(${n.id})" title="Edit">✏️</button>
+          <button class="icon-btn text-red-400" onclick="deleteNote(${n.id})" title="Delete">🗑</button>
+        </div>
+      </div>
+      <p class="text-slate-400 text-sm whitespace-pre-wrap">${n.content || ''}</p>
+      <div class="text-slate-600 text-xs mt-3">${new Date(n.createdAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'})}</div>
+    </div>
+  `).join('');
+}
+
+async function addNote() {
+  const title = document.getElementById('noteTitle').value.trim();
+  const content = document.getElementById('noteContent').value.trim();
+  const err = document.getElementById('noteError');
+  err.style.display = 'none';
+
+  if (!title) {
+    err.textContent = 'Note title is required.';
+    err.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:8080/api/notes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: parseInt(userId), title, content })
+    });
+    const note = await res.json();
+    allNotes.push(note);
+    document.getElementById('noteTitle').value = '';
+    document.getElementById('noteContent').value = '';
+    renderNotes();
+  } catch (e) {
+    err.textContent = 'Failed to save note.';
+    err.style.display = 'block';
+  }
+}
+
+function openEdit(id) {
+  const note = allNotes.find(n => n.id === id);
+  if (!note) return;
+  editingId = id;
+  document.getElementById('editTitle').value = note.title;
+  document.getElementById('editContent').value = note.content || '';
+  document.getElementById('editModal').style.display = 'flex';
+}
+
+function closeEdit() {
+  editingId = null;
+  document.getElementById('editModal').style.display = 'none';
+}
+
+async function saveEdit() {
+  const title = document.getElementById('editTitle').value.trim();
+  const content = document.getElementById('editContent').value.trim();
+  if (!title) return;
+
+  try {
+    const res = await fetch(`http://localhost:8080/api/notes/${editingId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, content })
+    });
+    const updated = await res.json();
+    allNotes = allNotes.map(n => n.id === editingId ? updated : n);
+    closeEdit();
+    renderNotes();
+  } catch (e) { console.error('Edit failed', e); }
+}
+
+async function deleteNote(id) {
+  if (!confirm('Delete this note?')) return;
+  try {
+    await fetch(`http://localhost:8080/api/notes/${id}`, { method: 'DELETE' });
+    allNotes = allNotes.filter(n => n.id !== id);
+    renderNotes();
+  } catch (e) { console.error('Delete failed', e); }
+}
+
+function logout() { localStorage.clear(); window.location.href = 'login.html'; }
+
+loadNotes();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/repository/UserRepository.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/controller/AuthController.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/repository/NoteRepository.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/service/UserService.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/model/Task.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/model/StudySession.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/repository/TaskRepository.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/controller/StudySessionController.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/model/User.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/controller/NoteController.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/model/Note.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/repository/StudySessionRepository.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/StudySyncApplication.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/SecurityConfig.java
+/Users/sanainamdar/Desktop/Projects/StudySync/backend/src/main/java/com/studysync/controller/TaskController.java

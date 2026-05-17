@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — StudySync</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'DM Sans', sans-serif; background: #0f172a; color: #e2e8f0; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    h1 { font-family: 'Syne', sans-serif; }
+    .grad { background: linear-gradient(135deg, #6ee7b7, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.25rem; padding: 2.5rem; width: 100%; max-width: 420px; }
+    input { background: #0f172a; border: 1px solid #334155; border-radius: 0.625rem; padding: 0.75rem 1rem; width:100%; color:#e2e8f0; outline:none; transition: border 0.2s; }
+    input:focus { border-color: #6ee7b7; }
+    .btn { background: linear-gradient(135deg, #6ee7b7, #3b82f6); color: #0f172a; font-weight: 700; padding: 0.875rem; border-radius: 0.75rem; width:100%; cursor:pointer; border:none; font-size:1rem; transition: opacity 0.2s; }
+    .btn:hover { opacity: 0.85; }
+    .error { color: #f87171; font-size: 0.85rem; margin-top: 0.5rem; display:none; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="text-center mb-8">
+    <div class="text-3xl font-black mb-2" style="font-family:'Syne',sans-serif;">Study<span class="grad">Sync</span></div>
+    <p class="text-slate-400">Welcome back! Log in to continue.</p>
+  </div>
+
+  <div class="flex flex-col gap-4">
+    <div>
+      <label class="text-sm text-slate-400 mb-1 block">Email</label>
+      <input type="email" id="email" placeholder="you@email.com" />
+    </div>
+    <div>
+      <label class="text-sm text-slate-400 mb-1 block">Password</label>
+      <input type="password" id="password" placeholder="••••••••" />
+    </div>
+    <p class="error" id="errorMsg">Invalid credentials. Please try again.</p>
+    <button class="btn" onclick="handleLogin()">Log In</button>
+  </div>
+
+  <p class="text-center text-slate-500 text-sm mt-6">
+    Don't have an account? <a href="signup.html" class="text-emerald-400 hover:underline">Sign up</a>
+  </p>
+</div>
+
+<script>
+async function handleLogin() {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const errorMsg = document.getElementById('errorMsg');
+  errorMsg.style.display = 'none';
+
+  if (!email || !password) {
+    errorMsg.textContent = 'Please fill in all fields.';
+    errorMsg.style.display = 'block';
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:8080/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      // Save user info in localStorage so other pages can use it
+      localStorage.setItem('userId', data.userId);
+      localStorage.setItem('userName', data.name);
+      localStorage.setItem('userEmail', data.email);
+      localStorage.setItem('streakCount', data.streakCount);
+      window.location.href = 'dashboard.html';
+    } else {
+      errorMsg.textContent = data.message || 'Login failed.';
+      errorMsg.style.display = 'block';
+    }
+  } catch (err) {
+    errorMsg.textContent = 'Cannot connect to server. Is the backend running?';
+    errorMsg.style.display = 'block';
+  }
+}
+
+// Allow pressing Enter to login
+document.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+</script>
+</body>
+</html>
